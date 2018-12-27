@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { appRouting } from '../routes/app.routing';
+import { appRouting } from './routes/app.routing';
 
 class App {
     app: express.Application;
