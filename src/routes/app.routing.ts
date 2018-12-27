@@ -1,7 +1,9 @@
+import appController from '../controllers/app.controller';
+
 export class appRouting {
+    private appController: appController = new appController();
+    
     routes(app): void {
-        app.route('/').get((req, res) => {
-            res.status(200).json('hello world');
-        });
+        app.route('/').get(this.appController.uploadPackages);
     }
 }
