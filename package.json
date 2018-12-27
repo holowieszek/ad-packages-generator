@@ -1,0 +1,32 @@
+{
+  "name": "ad-packages-generator",
+  "version": "1.0.0",
+  "description": "### Problem?   Process of creating packages for advertising publishers is boring and monotonous. You've to repeat few actions hundreds times per week.",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "nodemon ./server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holowieszek/ad-packages-generator.git"
+  },
+  "author": "Mateusz Holowieszko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/holowieszek/ad-packages-generator/issues"
+  },
+  "homepage": "https://github.com/holowieszek/ad-packages-generator#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.1",
+    "nodemon": "^1.18.9",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/node": "^10.12.18"
+  }
+}
