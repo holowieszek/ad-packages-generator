@@ -1,6 +1,11 @@
 import { Schema } from 'mongoose';
 
 export const clicktagSchema: Schema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    },
     hook1: {
         type: String,
     },
