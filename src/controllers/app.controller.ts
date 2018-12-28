@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as glob from 'glob';
+import * as replaceInFile from 'replace-in-file';
 import { Response, Request } from 'express';
 
 export default class appController {
