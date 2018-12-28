@@ -12,10 +12,9 @@ export default class appController {
     public uploadPackages = async (req: Request, res: Response) => {
         await this.unzipUploadedFiles(req.file);
         await this.findIndexFiles();
+        await this.replaceClicktags();
 
-        console.log(this.indexFilesPaths);
-
-
+        res.status(200).json('done');
     }
 
     private unzipUploadedFiles = (file): Promise<any> => {
@@ -40,6 +39,24 @@ export default class appController {
                 self.indexFilesPaths.push(files);
 
                 resolve(self.indexFilesPaths);
+            });
+        });
+    }
+
+    private replaceClicktags = (): Promise<boolean> => {
+        const options = {
+            files: this.indexFilesPaths[0],
+            from: ['hook1', 'hook2'],
+            to: ['hook1_replaced', 'hook2_replaced']
+        }
+
+        return new Promise((resolve, reject) => {
+            replaceInFile(options, (error, changes) => {
+                if (error) {
+                    reject();
+                }
+
+                resolve(true);
             });
         });
     }
