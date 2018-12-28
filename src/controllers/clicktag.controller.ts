@@ -1,9 +1,10 @@
 import { clicktagModel } from '../models/clicktag.model';
+import { Request, Response } from 'express';
 
 export default class clicktagController {
 
-    createClicktag = () => {
-        //todo
+    createClicktag = (req: Request, res: Response) => {
+        res.status(201).json('clicktags POST');
     }
 
     getClicktag = () => {

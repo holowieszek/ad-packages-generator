@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 
 import { appRouting } from './routes/app.routing';
+import { clicktagRouting } from './routes/clicktag.routing';
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -9,6 +10,7 @@ class App {
     app: express.Application;
     private mongoUrl: string = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PWD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
     private appRouting: appRouting = new appRouting();
+    private clicktagRouting: clicktagRouting = new clicktagRouting();
 
     constructor() {
         this.app = express();
@@ -18,6 +20,7 @@ class App {
 
     config(): void {
         this.appRouting.routes(this.app);
+        this.clicktagRouting.routes(this.app);
     }
 
     mongoSetup(): void {
