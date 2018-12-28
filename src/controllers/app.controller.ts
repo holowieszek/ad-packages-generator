@@ -3,21 +3,27 @@ import * as unzip from 'unzip';
 import * as glob from 'glob';
 import * as replaceInFile from 'replace-in-file';
 import { Response, Request } from 'express';
+import { clicktagService } from '../services/clicktag.service';
 
 export default class appController {
     private readonly currentData: number = Date.now();
+    private clicktagService: clicktagService = new clicktagService();
+
     private uploadedFiles: Array<string> = [];
     private indexFilesPaths: Array<string> = [];
 
     public uploadPackages = async (req: Request, res: Response) => {
         await this.unzipUploadedFiles(req.file);
         await this.findIndexFiles();
-        await this.replaceClicktags();
 
+        const clicktag = await this.getClicktag(req.body.name);
+        
+        await this.replaceClicktags(clicktag);
+        
         res.status(200).json('done');
     }
 
-    private unzipUploadedFiles = (file): Promise<any> => {
+    private unzipUploadedFiles = (file): Promise<{}> => {
         return new Promise((resolve, reject) => {
             let path = `src/uploads/${this.currentData}/${file.originalname}`;
             this.uploadedFiles.push(path);
@@ -28,7 +34,7 @@ export default class appController {
         });
     }
 
-    private findIndexFiles = (): Promise<any> => {
+    private findIndexFiles = (): Promise<{}> => {
         const path = this.uploadedFiles[0] + '/**/index.html';
 
         return new Promise((resolve, reject) => {
@@ -43,11 +49,15 @@ export default class appController {
         });
     }
 
-    private replaceClicktags = (): Promise<boolean> => {
+    private getClicktag = async (name: string) => {
+        return await this.clicktagService.getClicktagByName(name);
+    }
+
+    private replaceClicktags = (data): Promise<boolean> => {
         const options = {
             files: this.indexFilesPaths[0],
-            from: ['hook1', 'hook2'],
-            to: ['hook1_replaced', 'hook2_replaced']
+            from: [data[0].hook1, data[0].hook2],
+            to: [data[0].clicktag1, data[0].clicktag2]
         }
 
         return new Promise((resolve, reject) => {
@@ -60,5 +70,4 @@ export default class appController {
             });
         });
     }
-
 }
