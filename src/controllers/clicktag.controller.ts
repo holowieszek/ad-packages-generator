@@ -5,8 +5,19 @@ export default class clicktagController {
     clicktagService: clicktagService = new clicktagService();
     
     createClicktag = (req: Request, res: Response) => {
-        // res.status(201).json('clicktags POST');
-        return this.clicktagService.createClicktag;
+        return this.clicktagService.createClicktag(req.body)
+            .then(result => {
+                res.status(201).json({
+                    message: 'Clicktag has been created successfully!',
+                    result
+                });
+            })
+            .catch(error => {
+                res.status(201).json({
+                    message: 'Something went wrong!',
+                    error
+                });
+            });
     }
 
     getClicktag = () => {
