@@ -37,6 +37,6 @@ export default class Upload {
     }
 
     public extractFile() {
-        return multer({ storage: this.uploadConfig() }).array('files');
+        return multer({ storage: this.uploadConfig() }).single('file');
     }
 }
