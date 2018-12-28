@@ -1,4 +1,5 @@
 import * as multer from 'multer';
+import * as fs from 'fs';
 
 export default class Upload {
     private uploadPath: string = './src/uploads';
@@ -9,6 +10,9 @@ export default class Upload {
     public uploadConfig() {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
+                if (!fs.existsSync(this.uploadPath)) {
+                    fs.mkdir(this.uploadPath, err => cb(err, this.uploadPath));
+                }
                 const validate = this.validateFile(file);
                 cb(validate, this.uploadPath);
             },
