@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
+import * as bodyParser from 'body-parser';
 
 import { appRouting } from './routes/app.routing';
 import { clicktagRouting } from './routes/clicktag.routing';
@@ -19,6 +20,8 @@ class App {
     }
 
     config(): void {
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({ extended: true }));
         this.appRouting.routes(this.app);
         this.clicktagRouting.routes(this.app);
     }
