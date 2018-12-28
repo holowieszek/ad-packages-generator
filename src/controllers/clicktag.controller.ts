@@ -1,27 +1,27 @@
 import { Request, Response } from 'express';
+import { returnResponse } from '../helpers/request.helper';
 import { clicktagService } from '../services/clicktag.service';
 
 export default class clicktagController {
     clicktagService: clicktagService = new clicktagService();
     
-    createClicktag = (req: Request, res: Response) => {
-        return this.clicktagService.createClicktag(req.body)
-            .then(result => {
-                res.status(201).json({
-                    message: 'Clicktag has been created successfully!',
-                    result
-                });
-            })
-            .catch(error => {
-                res.status(201).json({
-                    message: 'Something went wrong!',
-                    error
-                });
-            });
+    getAllClicktags = (req: Request, res: Response) => {
+        return this.clicktagService.getAllClicktags()
+            .then(result => returnResponse(res, 200, result))
+            .catch(error => returnResponse(res, 400, error));
     }
 
-    getClicktag = () => {
-        //todo
+    createClicktag = (req: Request, res: Response) => {
+        return this.clicktagService.createClicktag(req.body)
+            .then(result => returnResponse(res, 201, result))
+            .catch(error => returnResponse(res, 400, error));
+    }
+
+    getClicktagByName = (req: Request, res: Response) => {
+        const { name } = req.params;
+        return this.clicktagService.getClicktagByName(name)
+            .then(result => returnResponse(res, 200, result))
+            .catch(error => returnResponse(res, 400, error))
     }
 
     editClicktag = () => {
