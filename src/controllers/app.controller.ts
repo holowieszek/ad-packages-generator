@@ -63,10 +63,12 @@ export default class appController {
     }
 
     private replaceClicktags = (data): Promise<boolean> => {
+        const { hook1, clicktag1, hook2, clicktag2 } = data[0];
+        
         const options = {
             files: this.indexFilesPaths[0],
-            from: [data[0].hook1, data[0].hook2],
-            to: [data[0].clicktag1, data[0].clicktag2]
+            from: [hook1, hook2],
+            to: [clicktag1, clicktag2]
         }
 
         return new Promise((resolve, reject) => {
@@ -101,7 +103,6 @@ export default class appController {
 
     private deleteDir = (path: string) => {
         rimraf.sync(path);
-        console.log(`deleted ${path}`);
     }
 
     private createDownloadPackage = async (path: string) => {
