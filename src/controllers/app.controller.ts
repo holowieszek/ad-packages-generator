@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as glob from 'glob';
 import * as replaceInFile from 'replace-in-file';
+import * as zipFolder from 'zip-a-folder';
+import * as rimraf from 'rimraf';
 import { Response, Request } from 'express';
 import { clicktagService } from '../services/clicktag.service';
 
@@ -11,6 +13,7 @@ export default class appController {
 
     private uploadedFiles: Array<string> = [];
     private indexFilesPaths: Array<string> = [];
+    private downloadPath: string;
 
     public uploadPackages = async (req: Request, res: Response) => {
         await this.unzipUploadedFiles(req.file);
@@ -20,7 +23,13 @@ export default class appController {
         
         await this.replaceClicktags(clicktag);
         
-        res.status(200).json('done');
+        await this.zipFolders(this.indexFilesPaths);
+
+        this.createDownloadPackage(this.downloadPath);
+
+        res.status(200).json({
+            path: this.downloadPath + '.zip'
+        });
     }
 
     private unzipUploadedFiles = (file): Promise<{}> => {
@@ -69,5 +78,35 @@ export default class appController {
                 resolve(true);
             });
         });
+    }
+
+    private zipFolders = (folders: {}): Promise<boolean> => {
+
+        return new Promise((resolve, reject) => {
+            folders[0].forEach(async folder => {
+                const path = this.getPath(folder);
+                await zipFolder.zip(path, path + '.zip');
+    
+                this.deleteDir(path);
+                resolve(true);
+            });
+        })
+    }
+
+    private getPath = (path: string) => {
+        const downloadPath = path.substr(0, path.lastIndexOf('/'))
+        this.downloadPath = downloadPath;
+        return downloadPath;
+    }
+
+    private deleteDir = (path: string) => {
+        rimraf.sync(path);
+        console.log(`deleted ${path}`);
+    }
+
+    private createDownloadPackage = async (path: string) => {
+        const outputPath = this.getPath(path);
+        await zipFolder.zip(outputPath, outputPath + '.zip');
+        this.deleteDir(outputPath);
     }
 }
