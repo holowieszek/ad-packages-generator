@@ -32,7 +32,8 @@ export default class appController {
         });
     }
 
-    private unzipUploadedFiles = (file): Promise<{}> => {
+    private unzipUploadedFiles = (file): Promise<object> => {
+
         return new Promise((resolve, reject) => {
             let path = `src/uploads/${this.currentData}/${file.originalname}`;
             this.uploadedFiles.push(path);
@@ -43,7 +44,7 @@ export default class appController {
         });
     }
 
-    private findIndexFiles = (): Promise<{}> => {
+    private findIndexFiles = (): Promise<object> => {
         const path = this.uploadedFiles[0] + '/**/index.html';
 
         return new Promise((resolve, reject) => {
@@ -62,25 +63,25 @@ export default class appController {
         return await this.clicktagService.getClicktagByName(name);
     }
 
-    private replaceClicktags = (data): Promise<boolean> => {
+    private replaceClicktags = (data: object): Promise<boolean> => {
+        const { hook1, clicktag1, hook2, clicktag2 } = data[0];
+        
         const options = {
             files: this.indexFilesPaths[0],
-            from: [data[0].hook1, data[0].hook2],
-            to: [data[0].clicktag1, data[0].clicktag2]
+            from: [hook1, hook2],
+            to: [clicktag1, clicktag2]
         }
 
         return new Promise((resolve, reject) => {
             replaceInFile(options, (error, changes) => {
-                if (error) {
-                    reject();
-                }
+                error ? reject(): true;
 
                 resolve(true);
             });
         });
     }
 
-    private zipFolders = (folders: {}): Promise<boolean> => {
+    private zipFolders = (folders: object): Promise<boolean> => {
 
         return new Promise((resolve, reject) => {
             folders[0].forEach(async folder => {
@@ -101,7 +102,6 @@ export default class appController {
 
     private deleteDir = (path: string) => {
         rimraf.sync(path);
-        console.log(`deleted ${path}`);
     }
 
     private createDownloadPackage = async (path: string) => {
