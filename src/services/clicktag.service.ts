@@ -11,7 +11,15 @@ export class clicktagService {
         return Clicktag.create(data);
     }
 
-    getClicktagByName(name: string) {
-        return Clicktag.find({ name: name });
+    getClicktagById(id: string) {
+        return Clicktag.find({ _id: id });
+    }
+
+    deleteClicktag(id: string) {
+        return Clicktag.deleteOne({ _id: id });
+    }
+
+    updateClicktag(id: string, data: object) {
+        return Clicktag.findOneAndUpdate({ _id: id }, data);
     }
 }
