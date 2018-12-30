@@ -8,37 +8,48 @@ import { Response, Request } from 'express';
 import { clicktagService } from '../services/clicktag.service';
 
 export default class appController {
-    private readonly currentData: number = Date.now();
+    private currentData: number;
     private clicktagService: clicktagService = new clicktagService();
 
     private uploadedFiles: Array<string> = [];
-    private indexFilesPaths: Array<string> = [];
+    private indexFilesPaths: Array<string>;
     private downloadPath: string;
 
+
     public uploadPackages = async (req: Request, res: Response) => {
+        this.uploadedFiles = [];
+        this.indexFilesPaths = [];
+
         await this.unzipUploadedFiles(req.file);
         await this.findIndexFiles();
 
-        const clicktag = await this.getClicktag(req.body.name);
+        const clicktag = await this.getClicktag(req.body.clicktagId);
         
         await this.replaceClicktags(clicktag);
         
         await this.zipFolders(this.indexFilesPaths);
 
+        // await this.deleteDir(this.downloadPath);
+
         this.createDownloadPackage(this.downloadPath);
 
+        
         res.status(200).json({
             path: this.downloadPath + '.zip'
         });
+
     }
 
     private unzipUploadedFiles = (file): Promise<object> => {
+        this.currentData = Date.now();
+        console.log(this.currentData);
 
         return new Promise((resolve, reject) => {
             let path = `src/uploads/${this.currentData}/${file.originalname}`;
             this.uploadedFiles.push(path);
 
             fs.createReadStream(file.path).pipe(unzip.Extract({ path })).on('close', () => {
+                console.log(`unzipped ${path}`);
                 resolve(this.uploadedFiles);
             });
         });
@@ -59,8 +70,8 @@ export default class appController {
         });
     }
 
-    private getClicktag = async (name: string) => {
-        return await this.clicktagService.getClicktagByName(name);
+    private getClicktag = async (id: string) => {
+        return await this.clicktagService.getClicktagById(id);
     }
 
     private replaceClicktags = (data: object): Promise<boolean> => {
@@ -82,13 +93,13 @@ export default class appController {
     }
 
     private zipFolders = (folders: object): Promise<boolean> => {
-
         return new Promise((resolve, reject) => {
+
             folders[0].forEach(async folder => {
                 const path = this.getPath(folder);
+                console.log(path);
                 await zipFolder.zip(path, path + '.zip');
-    
-                this.deleteDir(path);
+                await this.deleteDir(path);
                 resolve(true);
             });
         })
@@ -100,13 +111,18 @@ export default class appController {
         return downloadPath;
     }
 
-    private deleteDir = (path: string) => {
-        rimraf.sync(path);
+    private deleteDir = (path: string): Promise<boolean> => {
+        return new Promise((resolve, reject) => {
+            rimraf(path, function() {
+                console.log(`delete ${path}`);
+                resolve(true);
+            });
+        })
     }
 
     private createDownloadPackage = async (path: string) => {
         const outputPath = this.getPath(path);
         await zipFolder.zip(outputPath, outputPath + '.zip');
-        this.deleteDir(outputPath);
+        // await this.deleteDir(outputPath);
     }
 }
